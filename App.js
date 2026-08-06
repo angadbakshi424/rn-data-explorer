@@ -1,22 +1,23 @@
-import { View, Text, Image, StyleSheet } from "react-native";
+import React from "react";
+import { View, Text, StyleSheet } from "react-native";
+
+import useFetch from "./src/hooks/useFetch";
+import { MEAL_API } from "./src/api/mealApi";
 
 export default function App() {
+  const { data, loading, error } = useFetch(MEAL_API);
+
   return (
     <View style={styles.container}>
-      <Image
-        source={{
-          uri: "https://picsum.photos/200",
-        }}
-        style={styles.image}
-      />
+      {loading && <Text>Loading...</Text>}
 
-      <Text style={styles.heading}>
-        Welcome to React Native
-      </Text>
+      {error && <Text>{error}</Text>}
 
-      <Text style={styles.subtitle}>
-        My Expo app is running successfully.
-      </Text>
+      {!loading && !error && (
+        <Text>
+          {data?.length ?? 0} items loaded
+        </Text>
+      )}
     </View>
   );
 }
@@ -26,25 +27,5 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 20,
-  },
-
-  image: {
-    width: 180,
-    height: 180,
-    borderRadius: 10,
-    marginBottom: 20,
-  },
-
-  heading: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-
-  subtitle: {
-    fontSize: 16,
-    color: "gray",
-    textAlign: "center",
   },
 });
