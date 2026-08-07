@@ -1,23 +1,38 @@
 import React from "react";
-import { View, StyleSheet, FlatList } from "react-native";
+import { View, FlatList, StyleSheet } from "react-native";
 
 import useFetch from "./src/hooks/useFetch";
 import { MEAL_API } from "./src/api/mealApi";
+
 import ItemCard from "./src/components/ItemCard";
+
+import Loading from "./src/components/states/Loading";
+import ErrorState from "./src/components/states/ErrorState";
+import Empty from "./src/components/states/Empty";
 
 const Separator = () => (
   <View style={{ height: 12 }} />
 );
 
 export default function App() {
-  const { data, loading, error } = useFetch(MEAL_API);
+  const {
+    data,
+    loading,
+    error,
+    retry,
+  } = useFetch(MEAL_API);
 
   if (loading) {
-    return null;
+    return <Loading />;
   }
 
   if (error) {
-    return null;
+    return (
+      <ErrorState
+        message={error}
+        onRetry={retry}
+      />
+    );
   }
 
   return (
@@ -29,6 +44,7 @@ export default function App() {
         )}
         keyExtractor={(item) => item.idMeal}
         ItemSeparatorComponent={Separator}
+        ListEmptyComponent={<Empty />}
         contentContainerStyle={styles.list}
       />
     </View>
@@ -42,6 +58,7 @@ const styles = StyleSheet.create({
   },
 
   list: {
-    paddingVertical: 12,
+    paddingVertical: 10,
+    flexGrow: 1,
   },
 });
