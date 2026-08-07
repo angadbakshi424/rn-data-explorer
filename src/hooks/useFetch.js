@@ -1,48 +1,52 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 
-function useFetch(url) {
+export default function useFetch(url) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState("");
+
+  const fetchMeals = useCallback(async (signal) => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const response = await fetch(url, { signal });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch meals.");
+      }
+
+      const result = await response.json();
+
+      // MealDB returns { meals: [...] } or { meals: null }
+      setData(result.meals || []);
+    } catch (err) {
+      if (err.name !== "AbortError") {
+        setError(err.message || "Something went wrong.");
+        setData([]);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [url]);
 
   useEffect(() => {
     const controller = new AbortController();
 
-    async function fetchData() {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const response = await fetch(url, {
-          signal: controller.signal,
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch meals.");
-        }
-
-        const result = await response.json();
-
-        setData(result.meals || []);
-      } catch (err) {
-        if (err.name !== "AbortError") {
-          setError(err.message);
-        }
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchData();
+    fetchMeals(controller.signal);
 
     return () => controller.abort();
-  }, [url]);
+  }, [fetchMeals]);
+
+  const retry = () => {
+    const controller = new AbortController();
+    fetchMeals(controller.signal);
+  };
 
   return {
     data,
     loading,
     error,
+    retry,
   };
 }
-
-export default useFetch;

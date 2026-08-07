@@ -1,60 +1,163 @@
-import React from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+import React, { useContext } from "react";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+} from "react-native";
+
+import { ThemeContext } from "../context/ThemeContext";
+import colors from "../theme/colors";
 
 export default function ItemCard({ item }) {
+  const { isDark } = useContext(ThemeContext);
+
+  const theme = isDark ? colors.dark : colors.light;
+
   return (
-    <View style={styles.card}>
+    <View
+      style={[
+        styles.card,
+        {
+          backgroundColor: theme.card,
+          shadowColor: theme.shadow,
+        },
+      ]}
+    >
       <Image
         source={{ uri: item.strMealThumb }}
         style={styles.image}
+        resizeMode="cover"
       />
 
-      <Text style={styles.title}>
-        {item.strMeal}
-      </Text>
+      <View style={styles.content}>
+        <Text
+          style={[
+            styles.title,
+            {
+              color: theme.text,
+            },
+          ]}
+          numberOfLines={2}
+        >
+          {item.strMeal}
+        </Text>
 
-      <Text style={styles.category}>
-        Category: {item.strCategory}
-      </Text>
+        <View style={styles.infoRow}>
+          <Text
+            style={[
+              styles.label,
+              {
+                color: theme.secondaryText,
+              },
+            ]}
+          >
+            Category:
+          </Text>
 
-      <Text style={styles.area}>
-        Cuisine: {item.strArea}
-      </Text>
+          <Text
+            style={[
+              styles.value,
+              {
+                color: theme.primary,
+              },
+            ]}
+          >
+            {item.strCategory}
+          </Text>
+        </View>
+
+        <View style={styles.infoRow}>
+          <Text
+            style={[
+              styles.label,
+              {
+                color: theme.secondaryText,
+              },
+            ]}
+          >
+            Cuisine:
+          </Text>
+
+          <Text
+            style={[
+              styles.value,
+              {
+                color: theme.primary,
+              },
+            ]}
+          >
+            {item.strArea}
+          </Text>
+        </View>
+
+        <Text
+          style={[
+            styles.id,
+            {
+              color: theme.secondaryText,
+            },
+          ]}
+        >
+          Meal ID: {item.idMeal}
+        </Text>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#fff",
-    margin: 20,
-    borderRadius: 12,
-    padding: 16,
-    elevation: 4,
+    marginHorizontal: 16,
+    borderRadius: 16,
+    overflow: "hidden",
+
+    elevation: 5,
+
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+
+    shadowOpacity: 0.2,
+
+    shadowRadius: 5,
   },
 
   image: {
     width: "100%",
     height: 220,
-    borderRadius: 10,
-    marginBottom: 12,
+  },
+
+  content: {
+    padding: 16,
   },
 
   title: {
     fontSize: 22,
     fontWeight: "bold",
-    color: "#222",
+    marginBottom: 12,
+  },
+
+  infoRow: {
+    flexDirection: "row",
     marginBottom: 8,
   },
 
-  category: {
-    fontSize: 16,
-    color: "#666",
-    marginBottom: 4,
+  label: {
+    fontSize: 15,
+    fontWeight: "600",
+    marginRight: 6,
   },
 
-  area: {
-    fontSize: 16,
-    color: "#666",
+  value: {
+    fontSize: 15,
+    fontWeight: "500",
+  },
+
+  id: {
+    marginTop: 12,
+    fontSize: 13,
+    fontStyle: "italic",
   },
 });

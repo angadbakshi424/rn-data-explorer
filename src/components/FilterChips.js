@@ -1,71 +1,82 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
-  View,
-  Text,
+  ScrollView,
   Pressable,
+  Text,
   StyleSheet,
 } from "react-native";
+
+import { ThemeContext } from "../context/ThemeContext";
+import colors from "../theme/colors";
 
 export default function FilterChips({
   options,
   selected,
   onSelect,
 }) {
+  const { isDark } = useContext(ThemeContext);
+
+  const theme = isDark ? colors.dark : colors.light;
+
   return (
-    <View style={styles.row}>
-      {options.map((option) => (
-        <Pressable
-          key={option}
-          onPress={() => onSelect(option)}
-          style={[
-            styles.chip,
-            selected === option &&
-              styles.selectedChip,
-          ]}
-          android_ripple={{
-            color: "#ddd",
-          }}
-        >
-          <Text
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.container}
+    >
+      {options.map((option) => {
+        const active = option === selected;
+
+        return (
+          <Pressable
+            key={option}
+            onPress={() => onSelect(option)}
+            android_ripple={{ color: "#cccccc" }}
             style={[
-              styles.text,
-              selected === option &&
-                styles.selectedText,
+              styles.chip,
+              {
+                backgroundColor: active
+                  ? theme.primary
+                  : theme.card,
+                borderColor: theme.primary,
+              },
             ]}
           >
-            {option}
-          </Text>
-        </Pressable>
-      ))}
-    </View>
+            <Text
+              style={[
+                styles.text,
+                {
+                  color: active
+                    ? "#ffffff"
+                    : theme.text,
+                },
+              ]}
+            >
+              {option}
+            </Text>
+          </Pressable>
+        );
+      })}
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    paddingHorizontal: 12,
-    gap: 8,
+  container: {
+    paddingHorizontal: 16,
+    paddingBottom: 12,
   },
 
   chip: {
-    borderWidth: 1,
-    borderColor: "#ff6b35",
-    paddingHorizontal: 16,
+    marginRight: 10,
     paddingVertical: 8,
-    borderRadius: 20,
-  },
-
-  selectedChip: {
-    backgroundColor: "#ff6b35",
+    paddingHorizontal: 18,
+    borderRadius: 25,
+    borderWidth: 1,
   },
 
   text: {
-    color: "#ff6b35",
-  },
-
-  selectedText: {
-    color: "#fff",
+    fontSize: 15,
+    fontWeight: "600",
   },
 });

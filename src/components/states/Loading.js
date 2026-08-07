@@ -1,11 +1,43 @@
-import React from "react";
-import { View, ActivityIndicator, Text, StyleSheet } from "react-native";
+import React, { useContext } from "react";
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  StyleSheet,
+} from "react-native";
+
+import { ThemeContext } from "../../context/ThemeContext";
+import colors from "../../theme/colors";
 
 export default function Loading() {
+  const { isDark } = useContext(ThemeContext);
+
+  const theme = isDark ? colors.dark : colors.light;
+
   return (
-    <View style={styles.container}>
-      <ActivityIndicator size="large" color="#ff6b35" />
-      <Text style={styles.text}>Loading meals...</Text>
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: theme.background,
+        },
+      ]}
+    >
+      <ActivityIndicator
+        size="large"
+        color={theme.primary}
+      />
+
+      <Text
+        style={[
+          styles.text,
+          {
+            color: theme.text,
+          },
+        ]}
+      >
+        Loading meals...
+      </Text>
     </View>
   );
 }
@@ -18,7 +50,8 @@ const styles = StyleSheet.create({
   },
 
   text: {
-    marginTop: 15,
-    fontSize: 16,
+    marginTop: 16,
+    fontSize: 18,
+    fontWeight: "600",
   },
 });
